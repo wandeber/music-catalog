@@ -18,7 +18,30 @@ export interface MusicBrainzAlbum {
   'first-release-date'?: string;
   'release-group'?: {
     'primary-type'?: string;
+    'secondary-types'?: string[];
   };
+  'artist-credit'?: string;
+  releases?: number;
+  type?: string;
+}
+
+export interface MusicBrainzRelease {
+  id: string;
+  title: string;
+  status?: string;
+  'release-events'?: Array<{
+    date?: string;
+    area?: {
+      name: string;
+    };
+  }>;
+  media?: Array<{
+    format?: string;
+    'track-count'?: number;
+  }>;
+  date?: string;
+  country?: string;
+  'track-count'?: number;
 }
 
 // Last.fm Types
