@@ -1,3 +1,40 @@
+# Catálogo de Música
+
+Una aplicación web moderna para explorar información sobre artistas, álbumes y canciones utilizando la API de Spotify.
+
+## Tecnologías
+
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- API de Spotify
+
+## Requisitos
+
+- Node.js 18.17 o superior
+- npm 9.6.7 o superior
+
+## Desarrollo
+
+1. Instalar dependencias:
+```bash
+npm install
+```
+
+2. Iniciar el servidor de desarrollo:
+```bash
+npm run dev
+```
+
+3. Abrir [http://localhost:3000](http://localhost:3000) en tu navegador.
+
+## Scripts Disponibles
+
+- `npm run dev` - Inicia el servidor de desarrollo
+- `npm run build` - Construye la aplicación para producción
+- `npm start` - Inicia la aplicación en modo producción
+- `npm run lint` - Ejecuta el linter
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
