@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, memo, use } from 'react';
-import { musicBrainzApi } from '@/services/musicbrainz';
 import Link from 'next/link';
 
 interface PageProps {

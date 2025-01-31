@@ -1,7 +1,7 @@
 import { musicBrainzApi } from './musicbrainz';
 import { lastFmApi } from './lastfm';
 import { deezerApi } from './deezer';
-import type { UnifiedArtist, UnifiedAlbum, UnifiedTrack } from '../types/api';
+import type { UnifiedArtist, UnifiedTrack } from '../types/api';
 
 export const unifiedApi = {
   searchArtists: async (query: string): Promise<UnifiedArtist[]> => {
