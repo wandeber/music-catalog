@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Catálogo de Música",
+  title: "Wusic",
   description: "Explora artistas, álbumes y canciones",
 };
 
@@ -23,7 +23,7 @@ export default function RootLayout({
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
               <Link href="/">
                 <h1 className="heading-1 hover:text-primary transition-colors cursor-pointer">
-                  Catálogo de Música
+                  Wusic
                 </h1>
               </Link>
             </div>

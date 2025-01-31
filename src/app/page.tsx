@@ -3,7 +3,6 @@
 import { useState, useCallback, memo, useEffect } from 'react';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { ArtistCard } from '@/components/ArtistCard';
-import { musicBrainzApi } from '@/services/musicbrainz';
 import { MusicBrainzArtist } from '@/types/api';
 import { useDebounce } from '@/hooks/useDebounce';
 import { MusicalNoteIcon } from '@heroicons/react/24/outline';
@@ -33,9 +32,9 @@ const ArtistList = memo(function ArtistList({
   artists: MusicBrainzArtist[];
 }) {
   return (
-    <div className="columns-1 md:columns-2 lg:columns-3 gap-6 [column-fill:auto] align-top">
+    <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
       {artists.map((artist) => (
-        <div key={artist.id} className="break-inside-avoid mb-6 [&:last-child]:mb-0">
+        <div key={artist.id} className="break-inside-avoid mb-6">
           <ArtistCard artist={artist} />
         </div>
       ))}
@@ -88,7 +87,7 @@ export default function Home() {
       <div className="space-y-8">
         <div className="text-center space-y-4">
           <h1 className="heading-1">
-            Catálogo de Música
+            Wusic
           </h1>
           <p className="text-[var(--muted-foreground)] max-w-2xl mx-auto">
             Explora millones de artistas, álbumes y canciones. Descubre nueva música y 

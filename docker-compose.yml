@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    container_name: music-catalog
+    container_name: wusic
     build:
       context: .
       dockerfile: Dockerfile
@@ -18,7 +18,7 @@ services:
     command: npm run dev
 
   redis:
-    container_name: music-catalog-redis
+    container_name: wusic-redis
     image: redis:alpine
     ports:
       - "6379:6379"

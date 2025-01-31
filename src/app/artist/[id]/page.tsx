@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, memo, use } from 'react';
-import { musicBrainzApi } from '@/services/musicbrainz';
 import type { MusicBrainzArtist, MusicBrainzAlbum } from '@/types/api';
 import Link from 'next/link';
 
@@ -209,9 +208,9 @@ export default function ArtistPage({ params }: PageProps) {
               <h2 className="heading-2">
                 {type} <span className="text-[var(--muted-foreground)]">({typeReleases.length})</span>
               </h2>
-              <div className="columns-1 md:columns-2 lg:columns-3 gap-6 [column-fill:auto] align-top">
+              <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
                 {typeReleases.map((release) => (
-                  <div key={release.id} className="break-inside-avoid mb-6 [&:last-child]:mb-0">
+                  <div key={release.id} className="break-inside-avoid mb-6">
                     <AlbumCard album={release} />
                   </div>
                 ))}

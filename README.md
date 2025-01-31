@@ -1,4 +1,4 @@
-# Catálogo de Música
+# Wusic
 
 Una aplicación web moderna para explorar información sobre artistas, álbumes y canciones utilizando la API de Spotify.
 
@@ -21,7 +21,12 @@ Una aplicación web moderna para explorar información sobre artistas, álbumes 
 npm install
 ```
 
-2. Iniciar el servidor de desarrollo:
+2. Crear un archivo `.env.local` y agregar las variables de entorno necesarias.
+```bash
+cp .env.local.sample .env.local
+```
+
+3. Iniciar el servidor de desarrollo:
 ```bash
 npm run dev
 ```
