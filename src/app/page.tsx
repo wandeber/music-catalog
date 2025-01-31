@@ -83,11 +83,11 @@ export default function Home() {
   }, [debouncedSearchTerm]);
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="min-h-full py-8 max-w-7xl mx-auto">
       <div className="space-y-8">
         <div className="text-center space-y-4">
           <h1 className="heading-1">
-            Wusic
+            Toda tu música
           </h1>
           <p className="text-[var(--muted-foreground)] max-w-2xl mx-auto">
             Explora millones de artistas, álbumes y canciones. Descubre nueva música y 
