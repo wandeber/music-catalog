@@ -3,8 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card: #1e293b;
+  --card-hover: #334155;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: #64748b;
+  --accent: #7c3aed;
+  --muted: #475569;
+  --muted-foreground: #94a3b8;
+  --border: #1e293b;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,7 +24,65 @@
 }
 
 body {
+  background-color: var(--background);
   color: var(--foreground);
-  background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-[var(--border)];
+  }
+  body {
+    @apply min-h-screen antialiased;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-[var(--card)] rounded-xl shadow-lg;
+  }
+
+  .card-hover {
+    @apply hover:bg-[var(--card-hover)] hover:shadow-xl transition-[background-color,box-shadow] duration-200 ease-in-out;
+  }
+
+  .heading-1 {
+    @apply text-4xl font-bold bg-gradient-to-r from-blue-500 to-violet-500 bg-clip-text text-transparent;
+  }
+
+  .heading-2 {
+    @apply text-2xl font-semibold text-[var(--foreground)];
+  }
+
+  .badge {
+    @apply px-2.5 py-1 text-xs font-medium rounded-full;
+  }
+
+  .badge-primary {
+    @apply bg-blue-500/20 text-blue-400;
+  }
+
+  .badge-secondary {
+    @apply bg-violet-500/20 text-violet-400;
+  }
+
+  .badge-success {
+    @apply bg-emerald-500/20 text-emerald-400;
+  }
+
+  .badge-warning {
+    @apply bg-amber-500/20 text-amber-400;
+  }
+
+  .input-search {
+    @apply w-full px-4 py-3 bg-[var(--card)] border border-[var(--muted)] rounded-xl 
+    text-[var(--foreground)] placeholder:text-[var(--muted-foreground)]
+    focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent
+    transition-all duration-300;
+  }
+
+  .link {
+    @apply text-[var(--primary)] hover:text-[var(--primary-hover)] transition-colors duration-200;
+  }
 }

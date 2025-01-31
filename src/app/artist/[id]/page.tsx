@@ -16,20 +16,20 @@ const ReleaseBadge = memo(function ReleaseBadge({ type }: { type: string }) {
   const getTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case 'album':
-        return 'bg-blue-100 text-blue-800';
+        return 'badge-primary';
       case 'single':
-        return 'bg-green-100 text-green-800';
+        return 'badge-success';
       case 'ep':
-        return 'bg-purple-100 text-purple-800';
+        return 'badge-secondary';
       case 'compilation':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'badge-warning';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'badge-primary';
     }
   };
 
   return (
-    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(type)}`}>
+    <span className={`badge ${getTypeColor(type)}`}>
       {type}
     </span>
   );
@@ -45,14 +45,14 @@ const AlbumCard = memo(function AlbumCard({
   
   return (
     <Link href={`/album/${album.id}`}>
-      <div className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-all">
+      <div className="card card-hover p-6">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-semibold text-gray-900 flex-1">{album.title}</h3>
+          <h3 className="font-semibold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors flex-1">{album.title}</h3>
           <ReleaseBadge type={album.type || 'Álbum'} />
         </div>
         <div className="space-y-2">
           {album['first-release-date'] && (
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-[var(--muted-foreground)]">
               Lanzamiento: {new Date(album['first-release-date']).toLocaleDateString('es-ES', {
                 year: 'numeric',
                 month: 'long',
@@ -61,7 +61,7 @@ const AlbumCard = memo(function AlbumCard({
             </p>
           )}
           {album.releases && album.releases > 0 && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[var(--muted-foreground)]">
               {album.releases} {album.releases === 1 ? 'edición' : 'ediciones'} diferentes
             </p>
           )}
@@ -70,7 +70,7 @@ const AlbumCard = memo(function AlbumCard({
               {secondaryTypes.map((type) => (
                 <span
                   key={type}
-                  className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full"
+                  className="badge badge-secondary"
                 >
                   {type}
                 </span>
@@ -120,18 +120,18 @@ export default function ArtistPage({ params }: PageProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <p className="text-gray-600">Cargando información del artista...</p>
+        <p className="text-[var(--muted-foreground)]">Cargando información del artista...</p>
       </div>
     );
   }
 
   if (error || !artist) {
     return (
-      <div className="bg-white shadow rounded-lg p-6">
-        <p className="text-gray-600 mb-4">{error || 'No se encontró el artista'}</p>
+      <div className="card p-6">
+        <p className="text-[var(--muted-foreground)] mb-4">{error || 'No se encontró el artista'}</p>
         <Link 
           href="/"
-          className="text-blue-500 hover:text-blue-600 font-medium"
+          className="link"
         >
           Volver al inicio
         </Link>
@@ -150,60 +150,65 @@ export default function ArtistPage({ params }: PageProps) {
   }, {} as Record<string, MusicBrainzAlbum[]>);
 
   return (
-    <div className="space-y-6">
-      <section className="bg-white shadow rounded-lg p-6">
-        <div className="flex justify-between items-start mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">{artist.name}</h1>
+    <div className="space-y-12">
+      <section className="space-y-8">
+        <div className="flex justify-between items-start">
+          <div className="space-y-4">
+            <h1 className="heading-1">{artist.name}</h1>
+            <div className="space-y-2">
+              {artist.country && (
+                <p className="text-[var(--muted-foreground)]">
+                  <span className="font-semibold text-[var(--foreground)]">País:</span> {artist.country}
+                </p>
+              )}
+              {artist['life-span']?.begin && (
+                <p className="text-[var(--muted-foreground)]">
+                  <span className="font-semibold text-[var(--foreground)]">Formado en:</span>{' '}
+                  {artist['life-span'].begin}
+                  {artist['life-span'].ended && artist['life-span'].end && (
+                    <> - Terminó en: {artist['life-span'].end}</>
+                  )}
+                </p>
+              )}
+            </div>
+          </div>
           <Link 
             href="/"
-            className="text-blue-500 hover:text-blue-600 font-medium"
+            className="link"
           >
             Volver al inicio
           </Link>
         </div>
-        <div className="space-y-4">
-          {artist.country && (
-            <p className="text-gray-600">
-              <span className="font-semibold">País:</span> {artist.country}
-            </p>
-          )}
-          {artist['life-span']?.begin && (
-            <p className="text-gray-600">
-              <span className="font-semibold">Formado en:</span>{' '}
-              {artist['life-span'].begin}
-              {artist['life-span'].ended && artist['life-span'].end && (
-                <> - Terminó en: {artist['life-span'].end}</>
-              )}
-            </p>
-          )}
-          {artist.tags && artist.tags.length > 0 && (
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Géneros</h2>
-              <div className="flex flex-wrap gap-2">
-                {artist.tags.map((tag) => (
-                  <span
-                    key={tag.name}
-                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
-                  >
-                    {tag.name}
-                  </span>
-                ))}
-              </div>
+
+        {artist.tags && artist.tags.length > 0 && (
+          <div>
+            <h2 className="heading-2 mb-4">Géneros</h2>
+            <div className="flex flex-wrap gap-2">
+              {artist.tags.map((tag) => (
+                <span
+                  key={tag.name}
+                  className="badge badge-primary"
+                >
+                  {tag.name}
+                </span>
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </section>
 
       {releases.length > 0 && (
-        <div className="space-y-8">
+        <div className="space-y-12">
           {Object.entries(releasesByType).map(([type, typeReleases]) => (
-            <section key={type} className="bg-white shadow rounded-lg p-6">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                {type} ({typeReleases.length})
+            <section key={type} className="space-y-6">
+              <h2 className="heading-2">
+                {type} <span className="text-[var(--muted-foreground)]">({typeReleases.length})</span>
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="columns-1 md:columns-2 lg:columns-3 gap-6 [column-fill:auto] align-top">
                 {typeReleases.map((release) => (
-                  <AlbumCard key={release.id} album={release} />
+                  <div key={release.id} className="break-inside-avoid mb-6 [&:last-child]:mb-0">
+                    <AlbumCard album={release} />
+                  </div>
                 ))}
               </div>
             </section>

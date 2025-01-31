@@ -1,64 +1,46 @@
 'use client';
 
-import { useState, useCallback, memo, useEffect, useMemo } from 'react';
+import { useState, useCallback, memo, useEffect } from 'react';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { ArtistCard } from '@/components/ArtistCard';
 import { musicBrainzApi } from '@/services/musicbrainz';
 import { MusicBrainzArtist } from '@/types/api';
 import { useDebounce } from '@/hooks/useDebounce';
+import { MusicalNoteIcon } from '@heroicons/react/24/outline';
 
-// Componente para el spinner de carga
-const LoadingSpinner = memo(function LoadingSpinner() {
-  return (
-    <div className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg px-4 py-2 flex items-center gap-2">
-      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-      <span className="text-sm text-gray-600">Buscando...</span>
-    </div>
-  );
-});
-
-// Componente individual para cada artista
-const ArtistItem = memo(function ArtistItem({
-  artist,
+// Componente para el mensaje de estado
+const StatusMessage = memo(function StatusMessage({
+  message,
+  icon,
 }: {
-  artist: MusicBrainzArtist;
+  message: string;
+  icon?: boolean;
 }) {
   return (
-    <div className="col-span-1">
-      <ArtistCard artist={artist} />
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      {icon && (
+        <MusicalNoteIcon className="w-12 h-12 text-[var(--muted)] mb-4 animate-pulse" />
+      )}
+      <p className="text-[var(--muted-foreground)]">{message}</p>
     </div>
   );
 });
 
-// Componente memorizado para la lista de artistas
+// Componente para la lista de artistas
 const ArtistList = memo(function ArtistList({
   artists,
 }: {
   artists: MusicBrainzArtist[];
 }) {
-  // Usamos useMemo para mantener la referencia de los elementos que no cambian
-  const artistElements = useMemo(
-    () =>
-      artists.map((artist) => (
-        <ArtistItem key={artist.id} artist={artist} />
-      )),
-    [artists]
-  );
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {artistElements}
+    <div className="columns-1 md:columns-2 lg:columns-3 gap-6 [column-fill:auto] align-top">
+      {artists.map((artist) => (
+        <div key={artist.id} className="break-inside-avoid mb-6 [&:last-child]:mb-0">
+          <ArtistCard artist={artist} />
+        </div>
+      ))}
     </div>
   );
-});
-
-// Componente memorizado para el mensaje de estado
-const StatusMessage = memo(function StatusMessage({
-  message,
-}: {
-  message: string;
-}) {
-  return <p className="text-gray-600">{message}</p>;
 });
 
 export default function Home() {
@@ -71,7 +53,6 @@ export default function Home() {
     setInputValue(query);
   }, []);
 
-  // Efecto para realizar la búsqueda cuando el término debounced cambia
   useEffect(() => {
     const searchArtists = async () => {
       const term = debouncedSearchTerm.trim();
@@ -80,9 +61,7 @@ export default function Home() {
         setIsSearching(true);
         try {
           const results = await musicBrainzApi.searchArtists(term);
-          // Comparamos los resultados actuales con los nuevos
           setArtists(prevArtists => {
-            // Si los IDs son los mismos, mantenemos las referencias anteriores
             const newArtists = results.map(newArtist => {
               const existingArtist = prevArtists.find(a => a.id === newArtist.id);
               return existingArtist || newArtist;
@@ -103,41 +82,46 @@ export default function Home() {
     searchArtists();
   }, [debouncedSearchTerm]);
 
-  // Memorizamos el contenido principal
-  const content = useMemo(() => {
-    if (debouncedSearchTerm.trim().length > 2) {
-      if (artists.length > 0) {
-        return <ArtistList artists={artists} />;
-      }
-      return <StatusMessage message="No se encontraron artistas" />;
-    }
-
-    if (debouncedSearchTerm.trim().length > 0) {
-      return <StatusMessage message="Escribe al menos 3 caracteres para buscar" />;
-    }
-
-    return null;
-  }, [debouncedSearchTerm, artists]);
-
   return (
-    <div className="space-y-6">
-      <section className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-          Bienvenido al Catálogo de Música
-        </h2>
-        <div className="max-w-2xl">
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="space-y-8">
+        <div className="text-center space-y-4">
+          <h1 className="heading-1">
+            Catálogo de Música
+          </h1>
+          <p className="text-[var(--muted-foreground)] max-w-2xl mx-auto">
+            Explora millones de artistas, álbumes y canciones. Descubre nueva música y 
+            disfruta de información detallada sobre tus artistas favoritos.
+          </p>
+        </div>
+
+        <div className="max-w-2xl mx-auto">
           <SearchInput
             value={inputValue}
             onChange={handleSearch}
             placeholder="Busca un artista..."
           />
         </div>
-      </section>
 
-      <section className="space-y-4">
-        {content}
-        {isSearching && <LoadingSpinner />}
-      </section>
+        <div className="space-y-6">
+          {isSearching ? (
+            <StatusMessage message="Buscando artistas..." icon />
+          ) : debouncedSearchTerm.trim().length > 2 ? (
+            artists.length > 0 ? (
+              <ArtistList artists={artists} />
+            ) : (
+              <StatusMessage message="No se encontraron artistas" />
+            )
+          ) : debouncedSearchTerm.trim().length > 0 ? (
+            <StatusMessage message="Escribe al menos 3 caracteres para buscar" />
+          ) : (
+            <StatusMessage 
+              message="Empieza escribiendo el nombre de un artista" 
+              icon 
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -26,18 +26,18 @@ const TrackItem = memo(function TrackItem({
   position: string;
 }) {
   return (
-    <div className="flex items-center py-2 hover:bg-gray-50 px-4 rounded-lg group">
-      <div className="w-12 text-gray-400 text-sm">{position}</div>
-      <div className="flex-1">
-        <h3 className="text-gray-900 group-hover:text-blue-600 transition-colors">
+    <div className="flex items-center py-3 px-4 hover:bg-[var(--card-hover)] rounded-lg transition-colors group">
+      <div className="w-12 text-[var(--muted-foreground)] text-sm">{position}</div>
+      <div className="flex-1 min-w-0">
+        <h3 className="text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors truncate">
           {track.title}
         </h3>
         {track.artist && track.artist !== track['artist-credit'] && (
-          <p className="text-sm text-gray-500">{track.artist}</p>
+          <p className="text-sm text-[var(--muted-foreground)] truncate">{track.artist}</p>
         )}
       </div>
       {track.length && (
-        <div className="text-gray-400 text-sm">
+        <div className="text-[var(--muted-foreground)] text-sm">
           <Duration ms={track.length} />
         </div>
       )}
@@ -78,18 +78,18 @@ export default function AlbumPage({ params }: PageProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <p className="text-gray-600">Cargando información del álbum...</p>
+        <p className="text-[var(--muted-foreground)]">Cargando información del álbum...</p>
       </div>
     );
   }
 
   if (error || !album) {
     return (
-      <div className="bg-white shadow rounded-lg p-6">
-        <p className="text-gray-600 mb-4">{error || 'No se encontró el álbum'}</p>
+      <div className="card p-6">
+        <p className="text-[var(--muted-foreground)] mb-4">{error || 'No se encontró el álbum'}</p>
         <Link 
           href="/"
-          className="text-blue-500 hover:text-blue-600 font-medium"
+          className="link"
         >
           Volver al inicio
         </Link>
@@ -102,50 +102,58 @@ export default function AlbumPage({ params }: PageProps) {
   const tracks = mainRelease?.media?.[0]?.tracks || [];
 
   return (
-    <div className="space-y-6">
-      <section className="bg-white shadow rounded-lg p-6">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{album.title}</h1>
-            <p className="text-xl text-gray-600">{artistName}</p>
+    <div className="space-y-12">
+      <section className="space-y-8">
+        <div className="flex justify-between items-start">
+          <div className="space-y-4">
+            <div>
+              <h1 className="heading-1 mb-2">{album.title}</h1>
+              <Link 
+                href={`/artist/${album['artist-credit']?.[0]?.artist?.id}`}
+                className="text-lg text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors"
+              >
+                {artistName}
+              </Link>
+            </div>
+
+            <div className="space-y-2">
+              {album['first-release-date'] && (
+                <p className="text-[var(--muted-foreground)]">
+                  <span className="font-semibold text-[var(--foreground)]">Fecha de lanzamiento:</span>{' '}
+                  {new Date(album['first-release-date']).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </p>
+              )}
+              {mainRelease?.country && (
+                <p className="text-[var(--muted-foreground)]">
+                  <span className="font-semibold text-[var(--foreground)]">País:</span> {mainRelease.country}
+                </p>
+              )}
+              {album['primary-type'] && (
+                <p className="text-[var(--muted-foreground)]">
+                  <span className="font-semibold text-[var(--foreground)]">Tipo:</span> {album['primary-type']}
+                </p>
+              )}
+            </div>
           </div>
           <Link 
             href={`/artist/${album['artist-credit']?.[0]?.artist?.id}`}
-            className="text-blue-500 hover:text-blue-600 font-medium"
+            className="link"
           >
             Volver al artista
           </Link>
         </div>
-        <div className="space-y-4">
-          {album['first-release-date'] && (
-            <p className="text-gray-600">
-              <span className="font-semibold">Fecha de lanzamiento:</span>{' '}
-              {new Date(album['first-release-date']).toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </p>
-          )}
-          {mainRelease?.country && (
-            <p className="text-gray-600">
-              <span className="font-semibold">País:</span> {mainRelease.country}
-            </p>
-          )}
-          {album['primary-type'] && (
-            <p className="text-gray-600">
-              <span className="font-semibold">Tipo:</span> {album['primary-type']}
-            </p>
-          )}
-        </div>
       </section>
 
       {tracks.length > 0 && (
-        <section className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-            Lista de canciones
+        <section className="space-y-6">
+          <h2 className="heading-2">
+            Lista de canciones <span className="text-[var(--muted-foreground)]">({tracks.length})</span>
           </h2>
-          <div className="divide-y divide-gray-100">
+          <div className="card divide-y divide-[var(--border)]">
             {tracks.map((track: any) => (
               <TrackItem
                 key={track.id}
