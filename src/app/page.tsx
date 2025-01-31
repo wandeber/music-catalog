@@ -63,7 +63,7 @@ export default function Home() {
           const response = await fetch(`/api/musicbrainz?action=search&query=${encodeURIComponent(term)}`);
           const results = await response.json();
           setArtists(prevArtists => {
-            const newArtists = results.map(newArtist => {
+            const newArtists = results.map((newArtist: MusicBrainzArtist) => {
               const existingArtist = prevArtists.find(a => a.id === newArtist.id);
               return existingArtist || newArtist;
             });
