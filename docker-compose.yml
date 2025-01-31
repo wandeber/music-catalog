@@ -12,4 +12,19 @@ services:
       - .:/app
     environment:
       - NODE_ENV=development
-    command: npm run dev 
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    command: npm run dev
+
+  redis:
+    container_name: music-catalog-redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  redis_data: 

@@ -60,7 +60,8 @@ export default function Home() {
       if (term.length > 2) {
         setIsSearching(true);
         try {
-          const results = await musicBrainzApi.searchArtists(term);
+          const response = await fetch(`/api/musicbrainz?action=search&query=${encodeURIComponent(term)}`);
+          const results = await response.json();
           setArtists(prevArtists => {
             const newArtists = results.map(newArtist => {
               const existingArtist = prevArtists.find(a => a.id === newArtist.id);

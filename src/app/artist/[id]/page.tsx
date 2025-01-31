@@ -96,14 +96,19 @@ export default function ArtistPage({ params }: PageProps) {
         setLoading(true);
         setError(null);
 
-        const artistData = await musicBrainzApi.getArtist(id);
+        const [artistResponse, releasesResponse] = await Promise.all([
+          fetch(`/api/musicbrainz?action=artist&id=${id}`),
+          fetch(`/api/musicbrainz?action=releases&id=${id}`)
+        ]);
+
+        const artistData = await artistResponse.json();
+        const releasesData = await releasesResponse.json();
+
         if (!artistData) {
           setError('No se pudo encontrar el artista');
           return;
         }
 
-        const releasesData = await musicBrainzApi.getArtistReleases(id);
-        
         setArtist(artistData);
         setReleases(releasesData);
       } catch (err) {

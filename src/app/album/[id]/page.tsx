@@ -57,7 +57,9 @@ export default function AlbumPage({ params }: PageProps) {
         setLoading(true);
         setError(null);
 
-        const data = await musicBrainzApi.getReleaseGroupDetails(id);
+        const response = await fetch(`/api/musicbrainz?action=release&id=${id}`);
+        const data = await response.json();
+
         if (!data) {
           setError('No se pudo encontrar el álbum');
           return;

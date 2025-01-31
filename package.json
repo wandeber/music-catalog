@@ -12,6 +12,7 @@
     "@heroicons/react": "^2.2.0",
     "@types/node-fetch": "^2.6.12",
     "axios": "^1.7.9",
+    "ioredis": "^5.4.2",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

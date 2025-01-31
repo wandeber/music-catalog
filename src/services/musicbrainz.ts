@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { MusicBrainzArtist, MusicBrainzAlbum } from '../types/api';
+import { getFromCache, setInCache } from '@/lib/redis';
 
 const BASE_URL = 'https://musicbrainz.org/ws/2';
 const HEADERS = {
@@ -9,8 +10,21 @@ const HEADERS = {
 // Añadir un pequeño delay entre peticiones para respetar el rate limit
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Tiempos de caché específicos (en segundos)
+const CACHE_TIMES = {
+  SEARCH: 7 * 24 * 60 * 60,    // 7 días para búsquedas
+  ARTIST: 7 * 24 * 60 * 60,    // 7 días para detalles de artista
+  RELEASES: 7 * 24 * 60 * 60,  // 7 días para releases
+};
+
 export const musicBrainzApi = {
   searchArtists: async (query: string): Promise<MusicBrainzArtist[]> => {
+    const cacheKey = `search:artists:${query}`;
+    
+    // Intentar obtener del caché
+    const cached = await getFromCache<MusicBrainzArtist[]>(cacheKey);
+    if (cached) return cached;
+
     try {
       const response = await axios.get(`${BASE_URL}/artist`, {
         headers: HEADERS,
@@ -20,7 +34,13 @@ export const musicBrainzApi = {
           limit: 10,
         },
       });
-      return response.data.artists || [];
+
+      const artists = response.data.artists || [];
+      
+      // Guardar en caché
+      await setInCache(cacheKey, artists, CACHE_TIMES.SEARCH);
+      
+      return artists;
     } catch (error) {
       console.error('Error searching artists:', error);
       return [];
@@ -28,6 +48,12 @@ export const musicBrainzApi = {
   },
 
   getArtist: async (id: string): Promise<MusicBrainzArtist | null> => {
+    const cacheKey = `artist:${id}`;
+    
+    // Intentar obtener del caché
+    const cached = await getFromCache<MusicBrainzArtist>(cacheKey);
+    if (cached) return cached;
+
     try {
       await delay(1000);
       const response = await axios.get(`${BASE_URL}/artist/${id}`, {
@@ -42,7 +68,7 @@ export const musicBrainzApi = {
         return null;
       }
 
-      return {
+      const artist = {
         id: response.data.id,
         name: response.data.name,
         type: response.data.type,
@@ -50,6 +76,11 @@ export const musicBrainzApi = {
         'life-span': response.data['life-span'] || {},
         tags: response.data.tags || [],
       };
+
+      // Guardar en caché
+      await setInCache(cacheKey, artist, CACHE_TIMES.ARTIST);
+      
+      return artist;
     } catch (error) {
       console.error('Error getting artist:', error);
       return null;
@@ -57,6 +88,12 @@ export const musicBrainzApi = {
   },
 
   getArtistReleases: async (id: string): Promise<MusicBrainzAlbum[]> => {
+    const cacheKey = `artist:${id}:releases`;
+    
+    // Intentar obtener del caché
+    const cached = await getFromCache<MusicBrainzAlbum[]>(cacheKey);
+    if (cached) return cached;
+
     try {
       await delay(1000);
       const response = await axios.get(`${BASE_URL}/release-group`, {
@@ -71,7 +108,7 @@ export const musicBrainzApi = {
 
       const releaseGroups = response.data['release-groups'] || [];
       
-      return releaseGroups
+      const releases = releaseGroups
         .sort((a: MusicBrainzAlbum, b: MusicBrainzAlbum) => {
           const dateA = a['first-release-date'] || '';
           const dateB = b['first-release-date'] || '';
@@ -89,6 +126,11 @@ export const musicBrainzApi = {
           releases: 1,
           type: group['primary-type'] || 'Álbum',
         }));
+
+      // Guardar en caché
+      await setInCache(cacheKey, releases, CACHE_TIMES.RELEASES);
+      
+      return releases;
     } catch (error) {
       console.error('Error getting artist releases:', error);
       return [];
@@ -96,6 +138,12 @@ export const musicBrainzApi = {
   },
 
   getReleaseGroupDetails: async (id: string): Promise<any> => {
+    const cacheKey = `release:${id}`;
+    
+    // Intentar obtener del caché
+    const cached = await getFromCache(cacheKey);
+    if (cached) return cached;
+
     try {
       await delay(1000);
       
@@ -117,10 +165,12 @@ export const musicBrainzApi = {
       // Obtenemos los detalles del primer lanzamiento
       const firstReleaseId = groupResponse.data.releases?.[0]?.id;
       if (!firstReleaseId) {
-        return {
+        const data = {
           ...groupResponse.data,
           releases: [],
         };
+        await setInCache(cacheKey, data, CACHE_TIMES.RELEASES);
+        return data;
       }
 
       const releaseResponse = await axios.get(`${BASE_URL}/release/${firstReleaseId}`, {
@@ -131,7 +181,7 @@ export const musicBrainzApi = {
         },
       });
 
-      return {
+      const data = {
         ...groupResponse.data,
         releases: [
           {
@@ -149,6 +199,11 @@ export const musicBrainzApi = {
           },
         ],
       };
+
+      // Guardar en caché
+      await setInCache(cacheKey, data, CACHE_TIMES.RELEASES);
+      
+      return data;
     } catch (error) {
       console.error('Error getting release group details:', error);
       return null;
